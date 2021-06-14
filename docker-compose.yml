@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+
+  php:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: php
+    ports:
+      - 9000:9000
+    networks:
+      - app-network
+    volumes:
+      - /path/of/your/project:/var/www/html
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/html
+
+
+  mysql:
+    image: mysql:5.7.32
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql_password
+    networks:
+      - app-network
+    volumes:
+      - dbdata:/var/lib/mysql/
+    tty: true
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - 80:80
+    networks:
+      - app-network
+    volumes:
+      - /path/of/your/project:/var/www/html
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+    tty: true
+    restart: unless-stopped
+
+networks:
+  app-network:
+
+volumes:
+  dbdata:
